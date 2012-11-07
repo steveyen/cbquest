@@ -24,7 +24,7 @@ function main(config) {
                 });
             }
         }, 1000);
-    
+
     switch(config.debug_level) {
         case "error":
             log = new Log(Log.ERROR); break;
@@ -33,17 +33,18 @@ function main(config) {
         case "info":
             log = new Log(Log.INFO); break;
     };
-    
+
     log.info("Starting BrowserQuest game server...");
-    
+
     server.onConnect(function(connection) {
+        log.info("server.onConnect...");
         var world, // the one in which the player will be spawned
             connect = function() {
                 if(world) {
                     world.connect_callback(new Player(connection, world));
                 }
             };
-        
+
         if(metrics) {
             metrics.getOpenWorldCount(function(open_world_count) {
                 // choose the least populated world among open worlds
@@ -64,7 +65,7 @@ function main(config) {
     server.onError(function() {
         log.error(Array.prototype.join.call(arguments, ", "));
     });
-    
+
     var onPopulationChange = function() {
         metrics.updatePlayerCounters(worlds, function(totalPlayers) {
             _.each(worlds, function(world) {
@@ -83,17 +84,17 @@ function main(config) {
             world.onPlayerRemoved(onPopulationChange);
         }
     });
-    
+
     server.onRequestStatus(function() {
         return JSON.stringify(getWorldDistribution(worlds));
     });
-    
+
     if(config.metrics_enabled) {
         metrics.ready(function() {
             onPopulationChange(); // initialize all counters to 0 when the server starts
         });
     }
-    
+
     process.on('uncaughtException', function (e) {
         log.error('uncaughtException: ' + e);
     });
@@ -101,7 +102,7 @@ function main(config) {
 
 function getWorldDistribution(worlds) {
     var distribution = [];
-    
+
     _.each(worlds, function(world) {
         distribution.push(world.playerCount);
     });
@@ -111,6 +112,7 @@ function getWorldDistribution(worlds) {
 function getConfigFile(path, callback) {
     fs.readFile(path, 'utf8', function(err, json_string) {
         if(err) {
+            log.error("Could not open config file:", err.path);
             console.error("Could not open config file:", err.path);
             callback(null);
         } else {
