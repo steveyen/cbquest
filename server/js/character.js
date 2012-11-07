@@ -83,6 +83,18 @@ module.exports = Character = Entity.extend({
         if(entity && entity.id in this.attackers) {
             delete this.attackers[entity.id];
             log.debug(this.id +" REMOVED ATTACKER "+ entity.id);
+            var event = '{"killer-id":"' + this.id + '",' +
+              '"killer-type":"' + this.type + '",' +
+              '"killer-kind":"' + this.kind + '",' +
+              '"killer-x":"' + this.x + '",' +
+              '"killer-y":"' + this.y + '",' +
+              '"victim-id":"' + entity.id + '",' +
+              '"victim-type":"' + entity.type + '",' +
+              '"victim-kind":"' + entity.kind + '"' +
+              '}';
+            log.debug(this.id +" REMOVED ATTACKER "+ entity.id + " event recording: " + event);
+            event_db_client.set("kill-" + (new Date()).getTime(), event);
+            log.debug(this.id +" REMOVED ATTACKER "+ entity.id + " event recorded");
         }
     },
 

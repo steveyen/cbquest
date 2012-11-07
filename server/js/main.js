@@ -38,9 +38,12 @@ function main(config) {
 
     log.info("event_db_module loading: " + config.event_db_module);
     event_db_module = require(config.event_db_module);
-    log.info("event_db_module: " + event_db_module);
+    log.info("event_db_module connecting: " + event_db_module + ", " +
+             config.event_db_host + ":" + config.event_db_port);
     event_db_client = new event_db_module.Client(config.event_db_port, config.event_db_host);
     log.info("event_db_client: " + event_db_client);
+    event_db_client.connect();
+    log.info("event_db_client connected: " + event_db_client);
 
     server.onConnect(function(connection) {
         log.info("server.onConnect...");
