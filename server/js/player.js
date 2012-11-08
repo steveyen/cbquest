@@ -345,6 +345,18 @@ module.exports = Player = Character.extend({
     equipItem: function(item) {
         if(item) {
             log.debug(this.name + " equips " + Types.getKindAsString(item.kind));
+            var event = '{' +
+              '"player-id":"' + this.id + '",' +
+              '"player-type":"' + this.type + '",' +
+              '"player-kind":"' + this.kind + '",' +
+              '"player-name":"' + this.name + '",' +
+              '"player-x":"' + this.x + '",' +
+              '"player-y":"' + this.y + '",' +
+              '"item-id":"' + item.id + '",' +
+              '"item-type":"' + item.type + '",' +
+              '"item-kind":"' + item.kind +
+              '}';
+            event_db_client.set("equip-" + (new Date()).getTime(), event);
 
             if(Types.isArmor(item.kind)) {
                 this.equipArmor(item.kind);
